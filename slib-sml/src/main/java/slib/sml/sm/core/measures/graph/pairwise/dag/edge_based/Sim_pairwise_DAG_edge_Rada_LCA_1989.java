@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import org.openrdf.model.URI;
 
-import slib.sglib.model.graph.weight.GWS;
+import slib.graph.model.graph.weight.GWS;
 import slib.sml.sm.core.measures.graph.pairwise.dag.edge_based.utils.SimDagEdgeUtils;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.utils.SMconf;
@@ -56,7 +56,7 @@ import slib.utils.impl.SetUtils;
 public class Sim_pairwise_DAG_edge_Rada_LCA_1989 extends Sim_DAG_edge_abstract {
 
     @Override
-    public double sim(URI a, URI b, SM_Engine c, SMconf conf) throws SLIB_Exception {
+    public double compare(URI a, URI b, SM_Engine c, SMconf conf) throws SLIB_Exception {
 
         GWS weightingScheme = c.getWeightingScheme(conf.getParamAsString("WEIGHTING_SCHEME"));
 
@@ -91,7 +91,7 @@ public class Sim_pairwise_DAG_edge_Rada_LCA_1989 extends Sim_DAG_edge_abstract {
 
         Set<URI> interSecAncestors = SetUtils.intersection(ancestors_A, ancestors_B);
 
-        if (interSecAncestors.isEmpty()) {
+        if (!interSecAncestors.isEmpty()) {
 
             URI msa = SimDagEdgeUtils.searchMSA(interSecAncestors, maxDepths);
             sim = 1 / (minDists_cA.get(msa) + minDists_cB.get(msa) + 1);
@@ -101,7 +101,7 @@ public class Sim_pairwise_DAG_edge_Rada_LCA_1989 extends Sim_DAG_edge_abstract {
     }
 
     @Override
-    public boolean isSymmetric() {
+    public Boolean isSymmetric() {
         // Depends on the symmetry of the weighting scheme
         return false;
     }

@@ -34,7 +34,7 @@
 package slib.sml.sm.core.measures.graph.pairwise.dag.edge_based;
 
 import org.openrdf.model.URI;
-import slib.sglib.model.graph.weight.GWS;
+import slib.graph.model.graph.weight.GWS;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.utils.SMconf;
 import slib.utils.ex.SLIB_Exception;
@@ -52,7 +52,7 @@ import slib.utils.ex.SLIB_Exception;
 public class Sim_pairwise_DAG_edge_Kyogoku_basic_2011 extends Sim_DAG_edge_abstract {
 
     @Override
-    public double sim(URI a, URI b, SM_Engine c, SMconf conf) throws SLIB_Exception {
+    public double compare(URI a, URI b, SM_Engine c, SMconf conf) throws SLIB_Exception {
 
         int maxDepth = c.getMaxDepth();
 
@@ -81,8 +81,5 @@ public class Sim_pairwise_DAG_edge_Kyogoku_basic_2011 extends Sim_DAG_edge_abstr
         return sim;
     }
 
-    @Override
-    public boolean isSymmetric() {
-        return true;
-    }
+    
 }

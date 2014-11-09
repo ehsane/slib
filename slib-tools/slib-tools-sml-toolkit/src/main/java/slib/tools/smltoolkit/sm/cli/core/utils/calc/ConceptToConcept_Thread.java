@@ -38,9 +38,9 @@ import java.util.concurrent.Callable;
 import org.openrdf.model.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.model.graph.G;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.URIFactory;
 import slib.sml.sm.core.utils.SMconf;
 import slib.tools.smltoolkit.sm.cli.core.SmCli;
 import slib.tools.smltoolkit.sm.cli.core.utils.ActionsParams;
@@ -164,7 +164,7 @@ public class ConceptToConcept_Thread implements Callable<ThreadResultsQueryLoade
                 tmp_buffer.append(ids_pairs);
                 for (SMconf p : sspM.conf.gConfPairwise) {
 
-                    sim = sspM.simManager.computePairwiseSim(p, e1, e2);
+                    sim = sspM.simManager.compare(p, e1, e2);
 
                     tmp_buffer.append("\t").append(sim);
 

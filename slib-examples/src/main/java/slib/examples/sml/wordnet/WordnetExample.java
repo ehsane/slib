@@ -37,13 +37,17 @@ import java.util.Map;
 import java.util.Set;
 import org.openrdf.model.URI;
 import slib.indexer.wordnet.IndexerWordNetBasic;
-import slib.sglib.io.conf.GDataConf;
-import slib.sglib.io.loader.wordnet.GraphLoader_Wordnet;
-import slib.sglib.io.util.GFormat;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.impl.graph.memory.GraphMemory;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.algo.utils.GAction;
+import slib.graph.algo.utils.GActionType;
+import slib.graph.algo.utils.GraphActionExecutor;
+import slib.graph.algo.validator.dag.ValidatorDAG;
+import slib.graph.io.conf.GDataConf;
+import slib.graph.io.loader.wordnet.GraphLoader_Wordnet;
+import slib.graph.io.util.GFormat;
+import slib.graph.model.graph.G;
+import slib.graph.model.impl.graph.memory.GraphMemory;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.URIFactory;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.metrics.ic.utils.IC_Conf_Topo;
 import slib.sml.sm.core.metrics.ic.utils.ICconf;
@@ -55,9 +59,9 @@ import slib.utils.ex.SLIB_Exception;
 /**
  * Simple example which how to take advantage of the Semantic Measures Library
  * to compute the semantic similarity of two nouns defined in WordNet 3.1
- * 
+ *
  * Documentation: http://www.semantic-measures-library.org
- * 
+ *
  * @author Sébastien Harispe <sebastien.harispe@gmail.com>
  */
 public class WordnetExample {
@@ -77,13 +81,22 @@ public class WordnetExample {
 
         GDataConf dataNoun = new GDataConf(GFormat.WORDNET_DATA, dataloc + "data.noun");
         GDataConf dataVerb = new GDataConf(GFormat.WORDNET_DATA, dataloc + "data.verb");
-        GDataConf dataAdj  = new GDataConf(GFormat.WORDNET_DATA, dataloc + "data.adj");
-        GDataConf dataAdv  = new GDataConf(GFormat.WORDNET_DATA, dataloc + "data.adv");
+        GDataConf dataAdj = new GDataConf(GFormat.WORDNET_DATA, dataloc + "data.adj");
+        GDataConf dataAdv = new GDataConf(GFormat.WORDNET_DATA, dataloc + "data.adv");
 
         loader.populate(dataNoun, wordnet);
         loader.populate(dataVerb, wordnet);
         loader.populate(dataAdj, wordnet);
         loader.populate(dataAdv, wordnet);
+
+        // We root the graph which has been loaded (this is optional but may be required to compare synset which do not share common ancestors).
+        GAction addRoot = new GAction(GActionType.REROOTING);
+        GraphActionExecutor.applyAction(addRoot, wordnet);
+
+        // This is optional. It just shows which are the synsets which are not subsumed
+        ValidatorDAG validatorDAG = new ValidatorDAG();
+        Set<URI> roots = validatorDAG.getTaxonomicRoots(wordnet);
+        System.out.println("Roots: " + roots);
 
         // We create an index to map the nouns to the vertices of the graph
         // We only build an index for the nouns in this example
@@ -92,10 +105,10 @@ public class WordnetExample {
         IndexerWordNetBasic indexWordnetNoun = new IndexerWordNetBasic(factory, wordnet, data_noun);
 
         // uncomment if you want to show the index, i.e. nouns and associated URIs (identifiers)
-        for(Map.Entry<String, Set<URI>> entry : indexWordnetNoun.getIndex().entrySet()){
-            System.out.println(entry.getKey()+"\t"+entry.getValue());
+        for (Map.Entry<String, Set<URI>> entry : indexWordnetNoun.getIndex().entrySet()) {
+            System.out.println(entry.getKey() + "\t" + entry.getValue());
         }
-        
+
         // We focus on three specific nouns in this example
         // - iced_coffee	[http://graph/wordnet/07936780]
         // - instant_coffee	[http://graph/wordnet/07936903]
@@ -122,15 +135,15 @@ public class WordnetExample {
         // several preprocessing will be made prior to the first computation, e.g. to compute the Information Content (IC)
         // of the vertices. This may take some few secondes
         SM_Engine engine = new SM_Engine(wordnet);
-        
+
         // we compute the semantic similarities
-        double sim_iced_coffee_vs_instant_coffee = engine.computePairwiseSim(measureConf, uri_iced_coffee, uri_instant_coffee);
-        double sim_iced_coffee_vs_green_tea      = engine.computePairwiseSim(measureConf, uri_iced_coffee, uri_green_tea);
-        
+        double sim_iced_coffee_vs_instant_coffee = engine.compare(measureConf, uri_iced_coffee, uri_instant_coffee);
+        double sim_iced_coffee_vs_green_tea = engine.compare(measureConf, uri_iced_coffee, uri_green_tea);
+
         // That's it
-        System.out.println("sim(iced_coffee,instant_coffee) = "+sim_iced_coffee_vs_instant_coffee);
-        System.out.println("sim(iced_coffee,green_tea)      = "+sim_iced_coffee_vs_green_tea);
-        
+        System.out.println("sim(iced_coffee,instant_coffee) = " + sim_iced_coffee_vs_instant_coffee);
+        System.out.println("sim(iced_coffee,green_tea)      = " + sim_iced_coffee_vs_green_tea);
+
         // Which prints
         // sim(iced_coffee,instant_coffee) = 0.7573022852697784
         // sim(iced_coffee,green_tea)      = 0.3833914674618656

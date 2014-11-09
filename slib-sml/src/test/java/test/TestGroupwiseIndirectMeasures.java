@@ -39,8 +39,8 @@ import org.junit.Test;
 import org.openrdf.model.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.URIFactory;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.measures.others.groupwise.indirect.Sim_groupwise_Average;
 import slib.sml.sm.core.measures.others.groupwise.indirect.Sim_groupwise_BestMatchAverage;
@@ -165,7 +165,7 @@ public class TestGroupwiseIndirectMeasures {
         System.out.println("BMM " + Sim_groupwise_BestMatchMax.sim(matrix));
         System.out.println("BMA " + Sim_groupwise_BestMatchAverage.sim(matrix));
         assertEquals("Average", 0.55, Sim_groupwise_Average.sim(matrix), 0.0001);
-        assertEquals("Lord 2003", 0.55, Sim_groupwise_Lord_2003.sim(matrix), 0.0001);
+        assertEquals("Lord 2003", 0.55, Sim_groupwise_Lord_2003.compare(matrix), 0.0001);
         assertEquals("BMA", 0.8958, Sim_groupwise_BestMatchAverage.sim(matrix), 0.0001);
         assertEquals("BMM", 0.9666, Sim_groupwise_BestMatchMax.sim(matrix), 0.0001);
     }

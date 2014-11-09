@@ -2,12 +2,34 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>slib</artifactId>
-        <groupId>fr.lgi2p.kid</groupId>
-        <version>0.8</version>
+        <groupId>com.github.sharispe</groupId>
+        <version>0.10-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>slib-tools</artifactId>
     <packaging>pom</packaging>
+    
+    
+    <name>${project.artifactId}</name>
+    <description>Tools based on slib modules</description>
+    <url>http://www.semantic-measures-library.org</url>
+    
+    <licenses>
+        <license>
+            <name>CECILL</name>
+            <url>http://www.cecill.info/licences/Licence_CeCILL_V2.1-en.txt</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <name>Sébastien Harispe</name>
+            <email>sebastien.harispe@gmail.com</email>
+            <organization>Ecole des mines d'Alès - LGI2P</organization>
+            <organizationUrl>http://www.mines-ales.fr/</organizationUrl>
+        </developer>
+    </developers>
+    
     <modules>
         <module>slib-tools-module</module>
         <module>slib-tools-sml-toolkit</module>
@@ -15,9 +37,9 @@
     </modules>
     <dependencies>
         <dependency>
-            <groupId>fr.lgi2p.kid</groupId>
+            <groupId>com.github.sharispe</groupId>
             <artifactId>slib-utils</artifactId>
-            <version>0.8</version>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
     </dependencies>
   
@@ -46,6 +68,44 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <finalName>slib-${project.version}</finalName>
+                    <descriptors>
+                        <descriptor>src/main/assembly/sdk.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <configuration>
+                    <passphrase>${gpg.passphrase}</passphrase>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
             </plugin>
         </plugins>
     </build>

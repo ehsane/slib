@@ -35,13 +35,13 @@ package slib.examples.sml.general;
 
 import java.util.Set;
 import org.openrdf.model.URI;
-import slib.sglib.io.conf.GDataConf;
-import slib.sglib.io.loader.GraphLoaderGeneric;
-import slib.sglib.io.util.GFormat;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.impl.graph.memory.GraphMemory;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.io.conf.GDataConf;
+import slib.graph.io.loader.GraphLoaderGeneric;
+import slib.graph.io.util.GFormat;
+import slib.graph.model.graph.G;
+import slib.graph.model.impl.graph.memory.GraphMemory;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.URIFactory;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.metrics.ic.utils.IC_Conf_Topo;
 import slib.sml.sm.core.metrics.ic.utils.ICconf;
@@ -117,8 +117,8 @@ public class SMComputation {
         // Finally, we compute the similarity between the concepts Horse and Whale
         URI horse = factory.getURI("http://graph/class/Horse");
         
-        double sim = engine.computePairwiseSim(smConf, whale, horse);
+        double sim = engine.compare(smConf, whale, horse);
         System.out.println("Sim Whale/Horse: "+sim);
-        System.out.println("Sim Horse/Horse: "+engine.computePairwiseSim(smConf, horse, horse));
+        System.out.println("Sim Horse/Horse: "+engine.compare(smConf, horse, horse));
     }
 }

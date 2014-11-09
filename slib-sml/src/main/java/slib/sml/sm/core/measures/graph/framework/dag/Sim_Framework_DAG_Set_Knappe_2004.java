@@ -61,7 +61,7 @@ public class Sim_Framework_DAG_Set_Knappe_2004 extends Sim_Framework_DAG_Set_abs
     }
 
     @Override
-    public double sim(Set<URI> ancA, Set<URI> ancB, SMconf conf) {
+    public double compare(Set<URI> ancA, Set<URI> ancB, SMconf conf) {
 
         Set<URI> interSecAncestors = SetUtils.intersection(ancA, ancB);
 
@@ -90,7 +90,7 @@ public class Sim_Framework_DAG_Set_Knappe_2004 extends Sim_Framework_DAG_Set_abs
     }
     
     @Override
-    public boolean isSymmetric() {
+    public Boolean isSymmetric() {
         return k == 0.5;
     }
 }

@@ -37,14 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import org.openrdf.model.URI;
-import slib.sglib.io.conf.GDataConf;
-import slib.sglib.io.loader.GraphLoaderGeneric;
-import slib.sglib.io.loader.bio.snomedct.GraphLoaderSnomedCT_RF2;
-import slib.sglib.io.util.GFormat;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.impl.graph.memory.GraphMemory;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.io.conf.GDataConf;
+import slib.graph.io.loader.GraphLoaderGeneric;
+import slib.graph.io.loader.bio.snomedct.GraphLoaderSnomedCT_RF2;
+import slib.graph.io.util.GFormat;
+import slib.graph.model.graph.G;
+import slib.graph.model.impl.graph.memory.GraphMemory;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.URIFactory;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.metrics.ic.utils.IC_Conf_Topo;
 import slib.sml.sm.core.metrics.ic.utils.ICconf;
@@ -115,7 +115,7 @@ public class SMComputationSnomedCT {
 
         // We retrieve the vertices corresponding to the two concepts
 
-        double sim = engine.computePairwiseSim(smConf, heartURI, myocardiumURI);
+        double sim = engine.compare(smConf, heartURI, myocardiumURI);
         System.out.println("Similarity Heart/Myocardium: " + sim);
 
         /* 
@@ -140,7 +140,7 @@ public class SMComputationSnomedCT {
             c1 = listVertices.get(id1);
             c2 = listVertices.get(id2);
 
-            sim = engine.computePairwiseSim(smConf, c1, c2);
+            sim = engine.compare(smConf, c1, c2);
 
             if ((i + 1) % 1000 == 0) {
                 idC1 = c1.getLocalName();

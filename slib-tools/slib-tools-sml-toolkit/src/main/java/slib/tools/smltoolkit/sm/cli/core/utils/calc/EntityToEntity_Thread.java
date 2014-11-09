@@ -41,10 +41,10 @@ import org.openrdf.model.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import slib.sglib.algo.graph.extraction.rvf.instances.InstancesAccessor;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.algo.extraction.rvf.instances.InstancesAccessor;
+import slib.graph.model.graph.G;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.URIFactory;
 import slib.sml.sm.core.utils.SMConstants;
 import slib.sml.sm.core.utils.SMconf;
 import slib.tools.smltoolkit.sm.cli.conf.xml.utils.Sm_XML_Cst;
@@ -79,6 +79,7 @@ public class EntityToEntity_Thread implements Callable<ThreadResultsQueryLoader>
      * @param queriesBench
      * @param sspM
      * @param nbMeasures
+     * @param queryParam
      */
     public EntityToEntity_Thread(PoolWorker poolWorker, Collection<QueryEntry> queriesBench, SmCli sspM, int nbMeasures, SMQueryParam queryParam) {
 
@@ -231,7 +232,7 @@ public class EntityToEntity_Thread implements Callable<ThreadResultsQueryLoader>
                             throw new SLIB_Ex_Critic("Cannot locate configuration associated to pairwise measure " + pm_id);
                         }
 
-                        sim = sspM.simManager.computeGroupwiseAddOnSim(m, pm_conf, setE1, setE2);
+                        sim = sspM.simManager.compare(m, pm_conf, setE1, setE2);
 
                         tmp_buffer.append("\t").append(sim);
 
@@ -240,7 +241,7 @@ public class EntityToEntity_Thread implements Callable<ThreadResultsQueryLoader>
                         }
                     } else {
 
-                        sim = sspM.simManager.computeGroupwiseStandaloneSim(m, setE1, setE2);
+                        sim = sspM.simManager.compare(m, setE1, setE2);
 
                         if (Double.isNaN(sim) || Double.isInfinite(sim)) {
                             SMutils.throwArithmeticCriticalException(m, e1, e2, sim);
@@ -256,7 +257,7 @@ public class EntityToEntity_Thread implements Callable<ThreadResultsQueryLoader>
             results.setSetValue(setValue);
             results.setSkipped(skipped);
 
-        } catch (Exception e) {
+        } catch (SLIB_Ex_Critic e) {
             if (logger.isDebugEnabled()) {
                 e.printStackTrace();
             }

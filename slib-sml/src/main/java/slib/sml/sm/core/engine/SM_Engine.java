@@ -48,23 +48,23 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import slib.sglib.algo.graph.accessor.GraphAccessor;
-import slib.sglib.algo.graph.extraction.rvf.AncestorEngine;
-import slib.sglib.algo.graph.extraction.rvf.DescendantEngine;
-import slib.sglib.algo.graph.extraction.rvf.RVF_TAX;
-import slib.sglib.algo.graph.metric.DepthAnalyserAG;
-import slib.sglib.algo.graph.reduction.dag.GraphReduction_Transitive;
-import slib.sglib.algo.graph.shortest_path.Dijkstra;
-import slib.sglib.algo.graph.traversal.classical.DFS;
-import slib.sglib.algo.graph.utils.GraphActionExecutor;
-import slib.sglib.algo.graph.validator.dag.ValidatorDAG;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.graph.elements.E;
-import slib.sglib.model.graph.utils.Direction;
-import slib.sglib.model.graph.utils.WalkConstraint;
-import slib.sglib.model.graph.weight.GWS;
-import slib.sglib.model.impl.graph.weight.GWS_impl;
-import slib.sglib.utils.WalkConstraintUtils;
+import slib.graph.algo.accessor.GraphAccessor;
+import slib.graph.algo.extraction.rvf.AncestorEngine;
+import slib.graph.algo.extraction.rvf.DescendantEngine;
+import slib.graph.algo.extraction.rvf.RVF_TAX;
+import slib.graph.algo.metric.DepthAnalyserAG;
+import slib.graph.algo.reduction.dag.GraphReduction_Transitive;
+import slib.graph.algo.shortest_path.Dijkstra;
+import slib.graph.algo.traversal.classical.DFS;
+import slib.graph.algo.utils.GraphActionExecutor;
+import slib.graph.algo.validator.dag.ValidatorDAG;
+import slib.graph.model.graph.G;
+import slib.graph.model.graph.elements.E;
+import slib.graph.model.graph.utils.Direction;
+import slib.graph.model.graph.utils.WalkConstraint;
+import slib.graph.model.graph.weight.GWS;
+import slib.graph.model.impl.graph.weight.GWS_impl;
+import slib.graph.utils.WalkConstraintUtils;
 import slib.sml.sm.core.measures.Sim_Groupwise_Direct;
 import slib.sml.sm.core.measures.Sim_Groupwise_Indirect;
 import slib.sml.sm.core.measures.Sim_Pairwise;
@@ -591,7 +591,22 @@ public class SM_Engine {
     public synchronized Map<URI, Set<URI>> getReachableLeaves() {
 
         if (cache.reachableLeaves.isEmpty()) {
-            cache.reachableLeaves = descGetter.getTerminalVertices();
+
+            Map<URI, Set<URI>> leaves = descGetter.getTerminalVertices();
+            /* according to the documentation of the method used above, 
+             if there are classes which are isolated (which do not establish rdfs:subClassOf in this case),
+             the algorithm will not process them and them will not be associated to an entry in the returned map.
+             We therefore add this classes in the result map.
+             */
+            for (URI c : classes) {
+                if (!leaves.containsKey(c)) {
+                    Set<URI> s = new HashSet<URI>();
+                    s.add(c);
+                    leaves.put(c, s);
+                }
+            }
+
+            cache.reachableLeaves = leaves;
         }
         return Collections.unmodifiableMap(cache.reachableLeaves);
     }
@@ -625,8 +640,9 @@ public class SM_Engine {
      *
      *
      * @return the number subsumed leaves for each classes
+     * @throws slib.utils.ex.SLIB_Ex_Critic
      */
-    public synchronized Map<URI, Integer> getAllNbReachableLeaves() {
+    public synchronized Map<URI, Integer> getAllNbReachableLeaves() throws SLIB_Ex_Critic {
 
         logger.info("Computing Nb Reachable Leaves : start");
 
@@ -636,6 +652,10 @@ public class SM_Engine {
             cache.allNbReachableLeaves = new HashMap<URI, Integer>();
 
             for (URI c : classes) {
+
+                if (!allReachableLeaves.containsKey(c)) { // this must never occurs
+                    throw new SLIB_Ex_Critic("Cannot found the number of leaves associated to concept " + c + " - this is abnormal and notify that their is an incoherency in the treatment, please notify this error to the development team");
+                }
                 cache.allNbReachableLeaves.put(c, allReachableLeaves.get(c).size());
             }
         }
@@ -673,7 +693,7 @@ public class SM_Engine {
      *
      * @throws SLIB_Ex_Critic
      */
-    public double computePairwiseSim(SMconf pairwiseConf, URI a, URI b) throws SLIB_Ex_Critic {
+    public double compare(SMconf pairwiseConf, URI a, URI b) throws SLIB_Ex_Critic {
 
         throwErrorIfNotClass(a);
         throwErrorIfNotClass(b);
@@ -706,7 +726,7 @@ public class SM_Engine {
                         pairwiseMeasures.put(pairwiseConf, pMeasure);
                     }
                 }
-                sim = pMeasure.sim(a, b, this, pairwiseConf);
+                sim = pMeasure.compare(a, b, this, pairwiseConf);
 
                 if (Double.isNaN(sim) || Double.isInfinite(sim)) {
                     SMutils.throwArithmeticCriticalException(pairwiseConf, a, b, sim);
@@ -760,7 +780,7 @@ public class SM_Engine {
      *
      * @throws SLIB_Ex_Critic
      */
-    public double computeGroupwiseStandaloneSim(
+    public double compare(
             SMconf confGroupwise,
             Set<URI> setA,
             Set<URI> setB) throws SLIB_Ex_Critic {
@@ -791,7 +811,7 @@ public class SM_Engine {
                     groupwiseStandaloneMeasures.put(confGroupwise, gMeasure);
                 }
             }
-            sim = gMeasure.sim(setA, setB, this, confGroupwise);
+            sim = gMeasure.compare(setA, setB, this, confGroupwise);
 
         } catch (ClassNotFoundException e) {
             throw new SLIB_Ex_Critic(e.getMessage());
@@ -825,7 +845,7 @@ public class SM_Engine {
      *
      * @throws SLIB_Ex_Critic
      */
-    public double computeGroupwiseAddOnSim(
+    public double compare(
             SMconf confGroupwise,
             SMconf confPairwise,
             Set<URI> setA,
@@ -857,7 +877,7 @@ public class SM_Engine {
                 }
             }
 
-            sim = gMeasure.sim(setA, setB, this, confGroupwise, confPairwise);
+            sim = gMeasure.compare(setA, setB, this, confGroupwise, confPairwise);
 
         } catch (ClassNotFoundException e) {
             throw new SLIB_Ex_Critic(e);
@@ -954,12 +974,11 @@ public class SM_Engine {
         for (URI c : topoOrdering) {
             Set<URI> instanceOfc = instancesOfClasses.get(c);
             rStack.put(c, instanceOfc.size());
-            
+
             // propagate instances in a bottom up fashion according the topological order
             // to the instances
-            
             for (E e : graph.getE(c, ancGetter.getWalkConstraint())) {
-                
+
                 // we perform the union if the c contains instances
                 if (!instanceOfc.isEmpty()) {
                     instancesOfClasses.get(e.getTarget()).addAll(instanceOfc);
@@ -1022,7 +1041,7 @@ public class SM_Engine {
 
         for (URI a : setA) {
             for (URI b : setB) {
-                m.setValue(a, b, computePairwiseSim(pairwiseConf, a, b));
+                m.setValue(a, b, compare(pairwiseConf, a, b));
             }
         }
         return m;

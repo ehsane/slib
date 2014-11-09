@@ -35,6 +35,7 @@ package slib.tools.smltoolkit.sm.cli.core;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,15 +43,15 @@ import java.util.concurrent.Future;
 import org.openrdf.model.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import slib.sglib.algo.graph.extraction.rvf.instances.InstancesAccessor;
-import slib.sglib.algo.graph.extraction.rvf.instances.impl.InstanceAccessor_RDF_TYPE;
-import slib.sglib.algo.graph.validator.dag.ValidatorDAG;
-import slib.sglib.io.loader.GraphLoaderGeneric;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.impl.repo.GraphRepositoryMemory;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.GraphRepository;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.algo.extraction.rvf.instances.InstancesAccessor;
+import slib.graph.algo.extraction.rvf.instances.impl.InstanceAccessor_RDF_TYPE;
+import slib.graph.algo.validator.dag.ValidatorDAG;
+import slib.graph.io.loader.GraphLoaderGeneric;
+import slib.graph.model.graph.G;
+import slib.graph.model.impl.repo.GraphRepositoryMemory;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.GraphRepository;
+import slib.graph.model.repo.URIFactory;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.metrics.ic.utils.ICconf;
 import slib.sml.sm.core.utils.SMConstants;
@@ -295,6 +296,7 @@ public class SmCli implements SmlModuleCLI {
                     QueryIterator qloader = new QueryFileIterator(infile, uri_prefix);
 
                     if (type.equals(Sm_XML_Cst.QUERIES_TYPE_CTOC)) {
+                        
                         perform_cTOc(qloader, queryParam);
                     } else if (type.equals(Sm_XML_Cst.QUERIES_TYPE_OTOO)) {
                         perform_oTOo(qloader, queryParam);
@@ -309,7 +311,11 @@ public class SmCli implements SmlModuleCLI {
                     throw new UnsupportedOperationException(type + " is not a supported " + XmlTags.TYPE_ATTR + " of queries");
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
+            throw new SLIB_Exception(e);
+        } catch (SLIB_Exception e) {
+            throw new SLIB_Exception(e);
+        } catch (UnsupportedOperationException e) {
             throw new SLIB_Exception(e);
         }
     }

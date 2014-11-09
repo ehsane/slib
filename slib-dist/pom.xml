@@ -2,12 +2,33 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>slib</artifactId>
-        <groupId>fr.lgi2p.kid</groupId>
-        <version>0.8</version>
+        <groupId>com.github.sharispe</groupId>
+        <version>0.10-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
+    
     <artifactId>slib-dist</artifactId>
     <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>module used to package the different modules of slib</description>
+    <url>http://www.semantic-measures-library.org</url>
+    
+    <licenses>
+        <license>
+            <name>CECILL</name>
+            <url>http://www.cecill.info/licences/Licence_CeCILL_V2.1-en.txt</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <name>Sébastien Harispe</name>
+            <email>sebastien.harispe@gmail.com</email>
+            <organization>Ecole des mines d'Alès - LGI2P</organization>
+            <organizationUrl>http://www.mines-ales.fr/</organizationUrl>
+        </developer>
+    </developers>
 
     <build>
         <plugins>
@@ -15,7 +36,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>slib-dist-${slib.version}-${maven.build.timestamp}</finalName>
+                    <finalName>slib-dist-${slib.version}-${timestamp}</finalName>
                 </configuration>
                 <version>2.4</version>
                 <executions>
@@ -41,7 +62,7 @@
                 <version>2.9.1</version>
                 <configuration>
                     <use>false</use>
-                    <excludePackageNames>slib.quicktest.*:sglib.gui.*</excludePackageNames>
+                    <excludePackageNames>slib.quicktest.*:slib-graph.gui.*</excludePackageNames>
                     <stylesheet>maven</stylesheet>
                     <descriptors>
                         <descriptor>src/main/assembly/all-jar.xml</descriptor>
@@ -58,49 +79,79 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <configuration>
+                    <passphrase>${gpg.passphrase}</passphrase>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+                
         </plugins>
     </build>
     
     <dependencies>
         <dependency>
-            <groupId>fr.lgi2p.kid</groupId>
+            <groupId>com.github.sharispe</groupId>
             <artifactId>slib-utils</artifactId>
-            <version>0.8</version>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.lgi2p.kid</groupId>
-            <artifactId>sglib-model</artifactId>
-            <version>0.8</version>
+            <groupId>com.github.sharispe</groupId>
+            <artifactId>slib-graph-model</artifactId>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.lgi2p.kid</groupId>
-            <artifactId>sglib-algo</artifactId>
-            <version>0.8</version>
+            <groupId>com.github.sharispe</groupId>
+            <artifactId>slib-graph-algo</artifactId>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.lgi2p.kid</groupId>
-            <artifactId>sglib-model-impl</artifactId>
-            <version>0.8</version>
+            <groupId>com.github.sharispe</groupId>
+            <artifactId>slib-graph-model-impl</artifactId>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.lgi2p.kid</groupId>
+            <groupId>com.github.sharispe</groupId>
             <artifactId>slib-indexer</artifactId>
-            <version>0.8</version>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.lgi2p.kid</groupId>
+            <groupId>com.github.sharispe</groupId>
             <artifactId>slib-sml</artifactId>
-            <version>0.8</version>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.lgi2p.kid</groupId>
-            <artifactId>sglib-io</artifactId>
-            <version>0.8</version>
+            <groupId>com.github.sharispe</groupId>
+            <artifactId>slib-graph-io</artifactId>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.lgi2p.kid</groupId>
+            <groupId>com.github.sharispe</groupId>
             <artifactId>slib-tools-sml-toolkit</artifactId>
-            <version>0.8</version>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
     </dependencies>
+    
+
 </project>

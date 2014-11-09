@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import org.openrdf.model.URI;
 
-import slib.sglib.model.graph.weight.GWS;
+import slib.graph.model.graph.weight.GWS;
 import slib.sml.sm.core.measures.graph.pairwise.dag.edge_based.utils.SimDagEdgeUtils;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.measures.graph.pairwise.dag.edge_based.Sim_DAG_edge_abstract;
@@ -61,7 +61,7 @@ public class Sim_pairwise_DAG_edge_Li_2003 extends Sim_DAG_edge_abstract {
 
     
     @Override
-    public double sim(URI a, URI b, SM_Engine c, SMconf conf) throws SLIB_Exception {
+    public double compare(URI a, URI b, SM_Engine c, SMconf conf) throws SLIB_Exception {
 
         GWS weightingScheme = c.getWeightingScheme(conf.getParamAsString("WEIGHTING_SCHEME"));
         double sp_AtoB = c.getShortestPath(a, b, weightingScheme);
@@ -110,10 +110,5 @@ public class Sim_pairwise_DAG_edge_Li_2003 extends Sim_DAG_edge_abstract {
         }
 
         return sim;
-    }
-
-    @Override
-    public boolean isSymmetric() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

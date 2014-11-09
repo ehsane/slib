@@ -41,16 +41,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDFS;
-import slib.sglib.algo.graph.validator.dag.ValidatorDAG;
-import slib.sglib.io.conf.GDataConf;
-import slib.sglib.io.loader.GraphLoaderGeneric;
-import slib.sglib.io.util.GFormat;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.graph.elements.E;
-import slib.sglib.model.graph.utils.Direction;
-import slib.sglib.model.impl.graph.memory.GraphMemory;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.algo.validator.dag.ValidatorDAG;
+import slib.graph.io.conf.GDataConf;
+import slib.graph.io.loader.GraphLoaderGeneric;
+import slib.graph.io.util.GFormat;
+import slib.graph.model.graph.G;
+import slib.graph.model.graph.elements.E;
+import slib.graph.model.graph.utils.Direction;
+import slib.graph.model.impl.graph.memory.GraphMemory;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.URIFactory;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.metrics.ic.utils.IC_Conf_Topo;
 import slib.sml.sm.core.metrics.ic.utils.ICconf;
@@ -174,7 +174,7 @@ public class MeSHExample_XML_2013 {
 
 
             // We compute the similarity
-            double sim = engine.computePairwiseSim(measureConf, c1, c2);
+            double sim = engine.compare(measureConf, c1, c2);
             System.out.println("Sim " + c1 + "\t" + c2 + "\t" + sim);
             
             System.out.println(meshGraph.toString());
@@ -197,7 +197,7 @@ public class MeSHExample_XML_2013 {
                 c1 = concepts.get(id1);
                 c2 = concepts.get(id2);
 
-                sim = engine.computePairwiseSim(measureConf, c1, c2);
+                sim = engine.compare(measureConf, c1, c2);
 
                 if ((i + 1) % 50000 == 0) {
                     idC1 = c1.getLocalName();
